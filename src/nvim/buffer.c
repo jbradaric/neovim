@@ -1608,12 +1608,14 @@ int buflist_getfile(int n, linenr_T lnum, int options, int forceit)
      * page containing "buf" if one exists */
     if (wp == NULL && (swb_flags & SWB_USETAB))
       wp = buf_jump_open_tab(buf);
-    /* If 'switchbuf' contains "split" or "newtab" and the current buffer
-     * isn't empty: open new window */
-    if (wp == NULL && (swb_flags & (SWB_SPLIT | SWB_NEWTAB)) && !bufempty()) {
-      if (swb_flags & SWB_NEWTAB)               /* Open in a new tab */
+    /* If 'switchbuf' contains "split", "vslipt" or "newtab" and the
+     * current buffer isn't empty: open new window */
+    if (wp == NULL && (swb_flags & (SWB_VSPLIT | SWB_SPLIT | SWB_NEWTAB))
+        && !bufempty()) {
+      if (swb_flags & SWB_NEWTAB) {              // Open in a new tab
         tabpage_new();
-      else if (win_split(0, 0) == FAIL)         /* Open in a new window */
+      } else if (win_split(0, (swb_flags & SWB_VSPLIT) ? WSP_VERT : 0) == FAIL)
+        // Open in a new window
         return FAIL;
       RESET_BINDING(curwin);
     }
