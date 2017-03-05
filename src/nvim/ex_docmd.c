@@ -9635,12 +9635,18 @@ static void ex_terminal(exarg_T *eap)
     lquote = rquote = "\"";
   }
 
+  // Split off the terminal window
+  if (win_split(0, 0) == FAIL) {
+    goto error;
+  }
+
   char ex_cmd[512];
   snprintf(ex_cmd, sizeof(ex_cmd),
            ":enew%s | call termopen(%s%s%s) | startinsert",
            eap->forceit==TRUE ? "!" : "", lquote, name, rquote);
   do_cmdline_cmd(ex_cmd);
 
+error:
   if (mustfree) {
     xfree(name);
   }
